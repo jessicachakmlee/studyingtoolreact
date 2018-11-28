@@ -1,5 +1,4 @@
 import * as React from "react";
-import './App.css';
 import styled from 'styled-components';
 
 const PageContainer = styled.div`
@@ -54,7 +53,7 @@ const buttonDiv = styled.div`
     flex-direction: row;
 `;
 
-const NextQuestionButton =  styled.button`
+const NextQuestionButton = styled.button`
     background: cornflowerblue;
     color: white;
     font-size: 16px;
@@ -64,6 +63,10 @@ const NextQuestionButton =  styled.button`
     
     :hover {
     background: skyblue;
+    }
+    
+    :focus{
+    outline: 0px solid transparent;
     }
 `;
 
@@ -78,6 +81,10 @@ const DeleteQuestionButton = styled.button`
     
     :hover {
     background: lightpink;
+    }
+    
+    :focus{
+    outline: 0px solid transparent;
     }
 `;
 
@@ -101,7 +108,7 @@ const AnswerText = styled.span`
 
 
 const ShowAnswerButton = styled.button`
-    background: cornflowerblue;
+    background: ${props => props.show ? 'palevioletred' : 'cornflowerblue'};
     color: white;
     font-size: 16px;
     font-weight: 700;
@@ -110,7 +117,11 @@ const ShowAnswerButton = styled.button`
     align-self: center;
     
     :hover {
-    background: skyblue;
+    background: ${props => props.show ? 'lightpink' : 'skyblue'};
+    }
+    
+    :focus{
+    outline: 0px solid transparent;
     }
 `;
 
@@ -152,12 +163,21 @@ const InputDiv = styled.div`
 `;
 
 const StyledInput = styled.input`
-    background: yellowgreen;
+    background: darkseagreen;
     width: 100px;
     height: 25px;
+    
+    :hover {
+    background: yellowgreen;
+    }
+    
+    :focus{
+    outline: 0px solid transparent;
+    }
 `;
 
-interface AppState
+interface
+AppState
 {
     QAPair: [];
     AnswerShown: boolean;
@@ -221,7 +241,7 @@ class App extends React.Component<AppState> {
     }
 
     handleSubmit = (event) => {
-        alert('Submitted! Question: ' + this.state.TextAreaQuestion.substring(0,30).concat('...') + ', Answer: ' + this.state.TextAreaAnswer.substring(0,30).concat('...'));
+        alert('Submitted! Question: ' + this.state.TextAreaQuestion.substring(0, 30).concat('...') + ', Answer: ' + this.state.TextAreaAnswer.substring(0, 30).concat('...'));
         let temp = {};
         temp[this.state.TextAreaQuestion] = this.state.TextAreaAnswer;
         this.setState((prevState) => {
@@ -235,6 +255,7 @@ class App extends React.Component<AppState> {
         const QAPairShown = this.state.QAPair[this.state.randomNumber];
         const QuestionShown = this.state.QAPair.length > 0 ? Object.keys(QAPairShown)[0] : 'No Question Left, please submit Questions below';
         const AnswerShown = this.state.QAPair.length > 0 ? Object.values(QAPairShown)[0] : '';
+        const ShowAnswerButtonToggle = this.state.AnswerShown ? 'Hide Answer' : 'Show Answer';
 
         return (
             <PageContainer>
@@ -261,10 +282,9 @@ class App extends React.Component<AppState> {
                             <QATitle>Answers</QATitle>
                             <QAContent>
                                 <AnswerTextDiv>
-                                <AnswerText show={this.state.AnswerShown}>{AnswerShown}</AnswerText>
+                                    <AnswerText show={this.state.AnswerShown}>{AnswerShown}</AnswerText>
                                 </AnswerTextDiv>
-                                <ShowAnswerButton onClick={this.showAnswer}>
-                                    Show Answer
+                                <ShowAnswerButton show={this.state.AnswerShown} onClick={this.showAnswer}>{ShowAnswerButtonToggle}
                                 </ShowAnswerButton>
                             </QAContent>
                         </QuestionAnswerDiv>
@@ -273,22 +293,22 @@ class App extends React.Component<AppState> {
                         <QuestionSubmissionTitle>Question Submission</QuestionSubmissionTitle>
                         <QSubmissionForm onSubmit={this.handleSubmit}>
                             <QuestionSubmissionDiv>
-                            <QAlabel> Enter Question: </QAlabel>
-                            <QSubmissiontextarea value={this.state.TextAreaQuestion}
-                                      onChange={this.handleChangeQuestion}
-                                      rows="4"
-                                      cols="50"
-                                      id="questiosnText"
-                                      name="questionText"
-                                      wrap="hard">Question</QSubmissiontextarea>
-                            <QAlabel> Enter Answer: </QAlabel>
-                            <QSubmissiontextarea value={this.state.TextAreaAnswer}
-                                      onChange={this.handleChangeAnswer}
-                                      rows="4"
-                                      cols="50"
-                                      id="questionAnswer"
-                                      name="questionAnswer"
-                                      wrap="hard">Question</QSubmissiontextarea>
+                                <QAlabel> Enter Question: </QAlabel>
+                                <QSubmissiontextarea value={this.state.TextAreaQuestion}
+                                                     onChange={this.handleChangeQuestion}
+                                                     rows="4"
+                                                     cols="50"
+                                                     id="questiosnText"
+                                                     name="questionText"
+                                                     wrap="hard">Question</QSubmissiontextarea>
+                                <QAlabel> Enter Answer: </QAlabel>
+                                <QSubmissiontextarea value={this.state.TextAreaAnswer}
+                                                     onChange={this.handleChangeAnswer}
+                                                     rows="4"
+                                                     cols="50"
+                                                     id="questionAnswer"
+                                                     name="questionAnswer"
+                                                     wrap="hard">Question</QSubmissiontextarea>
                             </QuestionSubmissionDiv>
                             <InputDiv>
                                 <StyledInput type="submit"/>
