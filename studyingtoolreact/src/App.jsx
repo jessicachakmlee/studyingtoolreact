@@ -10,6 +10,7 @@ const PageContainer = styled.div`
 
 const PageTitle = styled.div`
     flex: 1;
+    background-image: url("/image/abstract-astro-astronomy-956999.jpg");
 `;
 
 const ContentContainer = styled.div`
@@ -212,9 +213,12 @@ class App extends React.Component<AppState> {
 
     deleteQuestion = () => {
         if (this.state.QAPair.length > 0) {
-            alert('Question Deleted, click next question for another question');
-            this.setState((prevState) => {
-                QAPair: prevState.QAPair.splice(prevState.randomNumber, 1)
+            alert('Question Deleted');
+            let currentList = [...this.state.QAPair];
+            currentList.splice(this.state.randomNumber, 1);
+            this.setState({
+                QAPair: currentList,
+                randomNumber: 0
             })
         } else {
             alert('No more Questions left to delete, please submit questions below')
@@ -241,14 +245,13 @@ class App extends React.Component<AppState> {
     }
 
     handleSubmit = (event) => {
-        alert('Submitted! Question: ' + this.state.TextAreaQuestion.substring(0, 30).concat('...') + ', Answer: ' + this.state.TextAreaAnswer.substring(0, 30).concat('...'));
+        alert('Submitted!');
         let temp = {};
         temp[this.state.TextAreaQuestion] = this.state.TextAreaAnswer;
         this.setState((prevState) => {
             return {QAPair: [...prevState.QAPair, temp]}
         })
         event.preventDefault();
-        console.log(this.state.QAPair);
     }
 
     render() {
