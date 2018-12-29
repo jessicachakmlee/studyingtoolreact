@@ -20,6 +20,31 @@ const ContentContainer = styled.div`
     flex: 10;
 `;
 
+const QuestionBank = styled.div`
+    display: flex;
+    overflow: auto;
+    flex-direction: column;
+`;
+
+const QuestionBankLabel = styled.h2`
+    text-align: center;
+    border: 1px solid;
+    background: darkseagreen;
+`;
+
+const QuestionDisplayed = styled.div`
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid black;
+`;
+
+const QuestionShowSpan = styled.span`
+    align-self: flex-end;
+    width: 75%;
+    white-space: pre-wrap;
+    word-break: break-word;
+`;
+
 const QuestionAnswerContainer = styled.div`
     display: flex;
     flex-direction: row;
@@ -61,6 +86,7 @@ const NextQuestionButton = styled.button`
     font-weight: 700;
     width: 50%;
     height: 50px;
+    align-self: center;
     
     :hover {
     background: skyblue;
@@ -74,11 +100,11 @@ const NextQuestionButton = styled.button`
 const DeleteQuestionButton = styled.button`
     background: palevioletred;
     color: white;
-    font-size: 16px;
+    font-size: 10px;
     font-weight: 700;
-    width: 50%;
-    height: 50px;
-    align-self: center;
+    width: 100px;
+    height: 25px;
+    align-self: flex-end;
     
     :hover {
     background: lightpink;
@@ -192,7 +218,10 @@ class App extends React.Component<AppState> {
     constructor(props) {
         super(props);
         this.state = {
-            QAPair: [{SampleQuestion1: "Answer1"}, {SampleQuestion2: "Answer2"}],
+            QAPair: [{Question: "SampleQuestion1", Answer: "Answer1"}, {
+                Question: "SampleQuestion2",
+                Answer: "Answer2",
+            }],
             AnswerShown: false,
             randomNumber: 0,
             TextAreaQuestion: '',
@@ -211,18 +240,14 @@ class App extends React.Component<AppState> {
         });
     };
 
-    deleteQuestion = () => {
-        if (this.state.QAPair.length > 0) {
-            alert('Question Deleted');
-            let currentList = [...this.state.QAPair];
-            currentList.splice(this.state.randomNumber, 1);
-            this.setState({
-                QAPair: currentList,
-                randomNumber: 0
-            })
-        } else {
-            alert('No more Questions left to delete, please submit questions below')
-        }
+    deleteQuestion = (index) => {
+        let currentList = [...this.state.QAPair];
+        let numberchange = this.state.randomNumber === index ? 0 : this.state.randomNumber;
+        currentList.splice(index, 1);
+        this.setState({
+            QAPair: currentList,
+            randomNumber: numberchange
+        })
     }
 
     showAnswer = () => {
@@ -245,21 +270,26 @@ class App extends React.Component<AppState> {
     }
 
     handleSubmit = (event) => {
+        if(this.state.QAPair.findIndex(x => x.Question === this.state.TextAreaQuestion) !== -1){
+            alert('Question already Submitted. Please submit another unique Question.');
+            event.preventDefault();
+        } else {
         alert('Submitted!');
         let temp = {};
-        temp[this.state.TextAreaQuestion] = this.state.TextAreaAnswer;
+        temp["Question"] = this.state.TextAreaQuestion;
+        temp["Answer"] = this.state.TextAreaAnswer;
         this.setState((prevState) => {
             return {QAPair: [...prevState.QAPair, temp]}
         })
-        event.preventDefault();
+        event.preventDefault();}
     }
 
     render() {
+        console.log(this.state.QAPair);
         const QAPairShown = this.state.QAPair[this.state.randomNumber];
-        const QuestionShown = this.state.QAPair.length > 0 ? Object.keys(QAPairShown)[0] : 'No Question Left, please submit Questions below';
-        const AnswerShown = this.state.QAPair.length > 0 ? Object.values(QAPairShown)[0] : '';
+        const QuestionShown = this.state.QAPair.length > 0 ? Object.values(QAPairShown)[0] : 'No Question Left, please submit Questions below';
+        const AnswerShown = this.state.QAPair.length > 0 ? Object.values(QAPairShown)[1] : '';
         const ShowAnswerButtonToggle = this.state.AnswerShown ? 'Hide Answer' : 'Show Answer';
-
         return (
             <PageContainer>
                 <PageTitle>
@@ -271,14 +301,9 @@ class App extends React.Component<AppState> {
                             <QATitle>Questions</QATitle>
                             <QAContent>
                                 <QuestionShow>{QuestionShown}</QuestionShow>
-                                <buttonDiv>
-                                    <NextQuestionButton onClick={this.randomize}>
-                                        Next Question
-                                    </NextQuestionButton>
-                                    <DeleteQuestionButton onClick={this.deleteQuestion}>
-                                        Delete Question
-                                    </DeleteQuestionButton>
-                                </buttonDiv>
+                                <NextQuestionButton onClick={this.randomize}>
+                                    Next Question
+                                </NextQuestionButton>
                             </QAContent>
                         </QuestionAnswerDiv>
                         <QuestionAnswerDiv>
@@ -287,7 +312,8 @@ class App extends React.Component<AppState> {
                                 <AnswerTextDiv>
                                     <AnswerText show={this.state.AnswerShown}>{AnswerShown}</AnswerText>
                                 </AnswerTextDiv>
-                                <ShowAnswerButton show={this.state.AnswerShown} onClick={this.showAnswer}>{ShowAnswerButtonToggle}
+                                <ShowAnswerButton show={this.state.AnswerShown}
+                                                  onClick={this.showAnswer}>{ShowAnswerButtonToggle}
                                 </ShowAnswerButton>
                             </QAContent>
                         </QuestionAnswerDiv>
@@ -317,13 +343,25 @@ class App extends React.Component<AppState> {
                                 <StyledInput type="submit"/>
                             </InputDiv>
                         </QSubmissionForm>
+                        <div>
+                            <QuestionBank>
+                                <QuestionBankLabel>Question Bank</QuestionBankLabel>
+                                {
+                                    this.state.QAPair.map(QAPairs =>
+                                        <QuestionDisplayed>
+                                            <QuestionShowSpan>{QAPairs.Question}</QuestionShowSpan>
+                                            <DeleteQuestionButton onClick={() => this.deleteQuestion(this.state.QAPair.findIndex(x => x.Question === QAPairs.Question))}>Delete
+                                                Question</DeleteQuestionButton>
+                                        </QuestionDisplayed>
+                                    )}
+                            </QuestionBank>
+                        </div>
                     </QuestionSubmission>
                 </ContentContainer>
             </PageContainer>
-
-
         );
     }
+
 }
 
 export default App;
