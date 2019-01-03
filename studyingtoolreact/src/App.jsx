@@ -261,13 +261,13 @@ class App extends React.Component<AppState> {
         this.setState({
             TextAreaQuestion: event.target.value
         })
-    }
+    };
 
     handleChangeAnswer = (event) => {
         this.setState({
             TextAreaAnswer: event.target.value
         })
-    }
+    };
 
     handleSubmit = (event) => {
         if(this.state.QAPair.findIndex(x => x.Question === this.state.TextAreaQuestion) !== -1){
